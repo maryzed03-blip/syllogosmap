@@ -819,6 +819,20 @@ body {
 }
 </style>
 
+<style>
+.activity-copy-link-btn{
+  min-height:42px;
+  padding:10px 17px;
+  border:1px solid rgba(23,75,73,.18);
+  border-radius:999px;
+  background:#FFF9F3;
+  color:#174B49;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+.activity-copy-link-btn:hover{border-color:rgba(0,141,139,.38);}
+</style>
 </head>
 <body>
 
@@ -1500,12 +1514,35 @@ function openActivityDetail(s){
   }
 
   html+='<div class="activity-detail-actions">';
-  if(s.link&&!isSeminarCompleted(s)){
-    html+='<a class="profile-links" style="margin:0;text-decoration:none;" href="'+escapeHtml(s.link)+'" target="_blank" rel="noopener"><span style="display:inline-flex;background:var(--teal);color:#fff;border-radius:999px;padding:11px 18px;font-size:13px;font-weight:800;">Δήλωσε συμμετοχή</span></a>';
+  if(s.link){
+    if(!isSeminarCompleted(s)){
+      html+='<a class="profile-links" style="margin:0;text-decoration:none;" href="'+escapeHtml(s.link)+'" target="_blank" rel="noopener"><span style="display:inline-flex;background:var(--teal);color:#fff;border-radius:999px;padding:11px 18px;font-size:13px;font-weight:800;">Δήλωσε συμμετοχή</span></a>';
+    }
+    html+='<button class="activity-copy-link-btn" type="button" data-link="'+escapeHtml(s.link)+'">Αντιγραφή συνδέσμου</button>';
   }
   html+='</div></div>';
 
   activityDetailBody.innerHTML=html;
+
+  var copyButton=activityDetailBody.querySelector('.activity-copy-link-btn');
+  if(copyButton){
+    copyButton.addEventListener('click',function(){
+      var link=copyButton.getAttribute('data-link')||'';
+      if(!link)return;
+
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(link).then(function(){
+          copyButton.textContent='Ο σύνδεσμος αντιγράφηκε';
+          window.setTimeout(function(){copyButton.textContent='Αντιγραφή συνδέσμου';},1800);
+        }).catch(function(){
+          window.prompt('Αντέγραψε τον σύνδεσμο:',link);
+        });
+      }else{
+        window.prompt('Αντέγραψε τον σύνδεσμο:',link);
+      }
+    });
+  }
+
   openModal(activityDetailModal);
 }
 
@@ -1652,7 +1689,16 @@ function renderSeminars(t){
     item.innerHTML=photo+body;
     var moreButton=item.querySelector('.activity-more-btn');
     if(moreButton){
-      moreButton.addEventListener('click',function(){openActivityDetail(s);});
+      moreButton.addEventListener('click',function(){
+        /* Κάθε δράση του Ημερολογίου έχει συγκεκριμένο deep-link.
+           Το ανοίγουμε σε νέο tab ώστε να ανοίγει κατευθείαν
+           το σωστό popup και ο σύνδεσμος να μπορεί να σταλεί. */
+        if(s.link){
+          window.open(s.link,'_blank','noopener,noreferrer');
+          return;
+        }
+        openActivityDetail(s);
+      });
     }
 
     if(adminMode&&s.source!=='calendar'){
