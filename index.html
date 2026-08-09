@@ -959,7 +959,9 @@ var LEGACY_PUBLIC_BOOKINGS=[
     id:"2026-07-05",
     booking_date:"2026-07-05",
     therapist_name:"Ευαγγελία Ξανθοπούλου",
+    therapist_role:"Κλινική Κοινωνική Λειτουργός · Συστημική Θεραπεία · Σ.Ε.ΨΥ.G.",
     additional_coordinator_name:"Μαρία Ζάχου",
+    additional_coordinator_role:"Τελειόφοιτη Σύμβουλος Ψυχικής Υγείας Σ.Ε.ΨΥ.G.",
     action_time:"19:30 – 21:30",
     topic:"Από την εσωτερική ησυχία στην αυθεντική συνάντηση",
     description:"Πραγματοποιημένη δράση συλλόγου. Η ημερομηνία παραμένει ως ιστορική αναφορά.",
@@ -1098,6 +1100,8 @@ function calendarBookingToSeminar(booking){
     memberPrice:booking.member_price||'',
     coordinatorPhoto:booking.coordinator_photo_url||'',
     additionalCoordinatorPhoto:booking.additional_coordinator_photo_url||'',
+    coordinatorRole:booking.therapist_role||'',
+    additionalCoordinatorRole:booking.additional_coordinator_role||'',
     link:'https://hmerologiosillogou.vercel.app/?event='+encodeURIComponent(booking.booking_date||''),
     desc:booking.description||'',
     coordinators:names.join(' & ')
@@ -1503,10 +1507,9 @@ function openActivityDetail(s){
         html+='<div class="map-coordinator-placeholder">'+escapeHtml(String(name).charAt(0))+'</div>';
       }
       html+='<div class="map-coordinator-copy"><strong>'+escapeHtml(name)+'</strong>';
-      if(therapist){
-        var extra=[therapist.role||'',therapist.area||therapist.prefecture||''].filter(Boolean).join(' · ');
-        if(extra)html+='<small>'+escapeHtml(extra)+'</small>';
-      }
+      var eventRole=index===0 ? (s.coordinatorRole||'') : (s.additionalCoordinatorRole||'');
+      var extra=eventRole || (therapist ? (therapist.role||'') : '');
+      if(extra)html+='<small>'+escapeHtml(extra)+'</small>';
       html+='</div></div>';
     });
 
@@ -1518,30 +1521,11 @@ function openActivityDetail(s){
     if(!isSeminarCompleted(s)){
       html+='<a class="profile-links" style="margin:0;text-decoration:none;" href="'+escapeHtml(s.link)+'" target="_blank" rel="noopener"><span style="display:inline-flex;background:var(--teal);color:#fff;border-radius:999px;padding:11px 18px;font-size:13px;font-weight:800;">Δήλωσε συμμετοχή</span></a>';
     }
-    html+='<button class="activity-copy-link-btn" type="button" data-link="'+escapeHtml(s.link)+'">Αντιγραφή συνδέσμου</button>';
-  }
+}
   html+='</div></div>';
 
   activityDetailBody.innerHTML=html;
 
-  var copyButton=activityDetailBody.querySelector('.activity-copy-link-btn');
-  if(copyButton){
-    copyButton.addEventListener('click',function(){
-      var link=copyButton.getAttribute('data-link')||'';
-      if(!link)return;
-
-      if(navigator.clipboard&&navigator.clipboard.writeText){
-        navigator.clipboard.writeText(link).then(function(){
-          copyButton.textContent='Ο σύνδεσμος αντιγράφηκε';
-          window.setTimeout(function(){copyButton.textContent='Αντιγραφή συνδέσμου';},1800);
-        }).catch(function(){
-          window.prompt('Αντέγραψε τον σύνδεσμο:',link);
-        });
-      }else{
-        window.prompt('Αντέγραψε τον σύνδεσμο:',link);
-      }
-    });
-  }
 
   openModal(activityDetailModal);
 }
