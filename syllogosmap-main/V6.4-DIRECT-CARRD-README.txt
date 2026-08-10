@@ -1,0 +1,13 @@
+V6.4 DIRECT CARRD EMBED
+
+This version keeps the normal standalone index.html but also publishes:
+- /embed.js
+- /embed.css
+
+Carrd no longer uses an iframe.
+Use CARRD-THERAPEFTES-v2.0-DIRECT-NO-IFRAME.txt and set:
+https://YOUR-MAP.vercel.app/embed.js
+
+Result:
+Carrd hero -> map -> therapist directory, all in the Carrd document flow.
+No iframe, no iframe scroll, no iframe auto-height.
