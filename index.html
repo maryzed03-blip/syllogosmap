@@ -1120,9 +1120,69 @@ html.sepsyg-embedded-frame .map-app{
 }
 </style>
 
+
+<style>
+html.sepsyg-embedded-frame,
+html.sepsyg-embedded-frame body{
+  margin:0 !important;
+  padding:0 !important;
+}
+html.sepsyg-embedded-frame .map-app{
+  padding-top:20px !important;
+}
+html.sepsyg-embedded-frame .side-card{
+  position:relative !important;
+  z-index:2 !important;
+  color:var(--ink) !important;
+}
+html.sepsyg-embedded-frame #mapHolder svg{
+  visibility:visible !important;
+  opacity:1 !important;
+}
+</style>
+
+
+<style>
+/* v6.3 — NO AUTOHEIGHT FEEDBACK LOOP */
+html.sepsyg-embedded-frame,
+html.sepsyg-embedded-frame body{
+  min-height:0 !important;
+  height:auto !important;
+  overflow:hidden !important;
+}
+
+html.sepsyg-embedded-frame body{
+  display:block !important;
+}
+
+html.sepsyg-embedded-frame #sepsygEmbedContent{
+  position:relative;
+  width:100%;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible;
+}
+
+html.sepsyg-embedded-frame .map-app{
+  min-height:0 !important;
+}
+
+/* τα modal μένουν εκτός του μετρούμενου content wrapper */
+html.sepsyg-embedded-frame .modal{
+  position:absolute !important;
+  top:var(--sepsyg-embed-visible-top,0px) !important;
+  right:0 !important;
+  bottom:auto !important;
+  left:0 !important;
+  height:var(--sepsyg-embed-visible-height,100vh) !important;
+  min-height:320px;
+}
+</style>
+
 </head>
 <body>
 
+<div id="sepsygEmbedContent">
 <div class="sepsyg-map-top-access">
 <button id="adminButton" class="admin-btn" type="button" aria-label="Προσθήκη θεραπευτή" title="Προσθήκη θεραπευτή">＋</button>
 </div>
@@ -1141,7 +1201,9 @@ html.sepsyg-embedded-frame .map-app{
   <span id="adminNoteText">Πάτησε οπουδήποτε στον χάρτη για να τοποθετήσεις τη νέα πινέζα.</span>
   <button id="pinContinueButton" class="pin-continue-btn" type="button" style="display:none;">Στοιχεία &amp; αποθήκευση</button>
 </div>
-<div id="mapHolder" aria-label="Διαδραστικός χάρτης της Ελλάδας"></div>
+<div id="mapHolder" aria-label="Διαδραστικός χάρτης της Ελλάδας">
+<svg id="greeceSvg" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"><path class="prefecture" data-name="ΑΝΑΤΟΛΙΚH ΜΑΚΕΔΟΝIΑ ΚΑΙ ΘΡAΚΗ" data-color="#d8a6a6" d="M377,60L401,49L413,52L418,41L424,45L432,39L434,45L453,39L461,55L477,63L486,57L513,74L562,63L569,68L588,62L594,53L582,27L591,20L627,35L631,59L605,73L607,107L583,130L573,117L540,116L504,105L504,99L476,117L462,115L455,105L445,106L436,119L415,131L397,122L417,109L419,100L408,88L403,91L386,80L377,60ZM452,137L464,122L475,129L474,141L463,147L452,137ZM530,157L545,154L552,162L540,165L530,157Z" fill="#d8a6a6" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΚΕΝΤΡΙΚΗ ΜΑΚΕΔΟΝΙΑ" data-color="#e7bd8d" d="M223,108L233,90L246,84L290,88L297,80L304,83L309,64L340,66L349,57L374,59L385,67L386,80L403,91L408,88L419,100L415,112L384,132L402,151L395,152L395,160L407,167L410,159L442,193L434,195L423,178L402,169L387,170L383,177L390,187L408,196L411,207L404,215L380,184L359,178L352,187L316,168L309,154L323,149L316,139L290,158L296,170L287,193L298,213L286,214L270,200L268,188L259,197L259,187L250,186L257,176L250,162L235,156L233,135L218,124L216,115L227,111L223,108ZM351,197L353,187L365,203L388,217L355,212L351,197Z" fill="#e7bd8d" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΘΕΣΣΑΛΙΑ" data-color="#dfcf86" d="M182,223L189,226L197,219L234,224L230,214L251,187L259,187L259,197L268,188L270,200L283,212L300,213L320,254L333,262L354,297L331,306L332,300L333,305L344,296L334,282L319,277L310,293L323,305L322,314L330,311L319,319L284,310L283,301L263,286L242,312L229,299L218,303L214,288L189,297L193,284L174,265L167,243L178,240L176,229L182,223ZM375,294L391,304L380,306L375,294ZM395,299L405,284L402,297L395,299Z" fill="#dfcf86" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΒΟΡΕΙΟ ΑΙΓΑΙΟ" data-color="#acd09b" d="M491,261L493,255L498,258L491,261ZM496,209L512,207L518,214L531,205L523,231L516,218L508,224L512,230L498,225L496,209ZM563,365L578,358L591,363L591,389L579,406L566,396L577,385L563,365ZM538,359L545,359L544,365L538,359ZM575,474L584,462L608,456L596,469L575,474ZM563,295L567,285L607,274L629,312L624,314L616,303L623,317L611,319L585,306L601,294L591,294L582,306L563,295ZM617,469L620,460L620,473L617,469ZM625,452L640,443L666,446L667,453L646,462L625,452Z" fill="#acd09b" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΝΟΤΙΟ ΑΙΓΑΙΟ" data-color="#8fc9b6" d="M523,599L530,595L524,587L529,587L534,599L523,599ZM719,621L738,601L765,591L752,632L741,633L728,649L722,644L725,628L719,621ZM686,592L692,586L699,594L686,592ZM599,574L607,576L610,568L617,575L604,583L599,574ZM436,567L438,558L447,563L443,556L455,557L454,565L436,567ZM481,487L484,475L488,477L490,487L481,487ZM726,573L734,570L735,578L726,573ZM514,560L519,552L526,567L514,560ZM501,527L507,517L517,514L514,529L508,533L501,527ZM491,459L510,462L513,472L491,459ZM666,681L681,656L674,680L681,694L671,700L666,681ZM494,532L501,525L499,535L494,532ZM521,522L538,508L543,516L539,535L531,539L521,522ZM466,431L476,423L480,432L489,433L490,456L466,431ZM453,552L459,548L457,554L453,552ZM444,517L454,509L454,516L444,517ZM439,497L446,478L450,487L439,497ZM431,467L436,457L443,459L434,474L431,467ZM654,560L675,542L691,544L660,557L658,565L654,560ZM651,522L665,535L654,536L658,529L651,522ZM555,552L577,537L585,541L561,555L555,552ZM641,512L649,510L652,519L641,512ZM677,653L681,648L681,654L677,653ZM462,527L473,536L468,541L462,527ZM518,484L522,476L532,480L518,484ZM621,499L625,490L625,501L621,499Z" fill="#8fc9b6" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΚΕΝΤΡΙΚΗ ΕΛΛΑΔΑ" data-color="#95c6d4" d="M190,298L214,288L218,303L229,299L242,312L263,286L283,301L284,310L319,319L326,315L305,329L292,325L287,333L328,341L333,355L341,350L352,354L353,369L373,370L383,386L378,404L368,408L356,400L357,394L349,403L320,403L306,398L296,381L288,393L275,375L273,387L228,382L231,373L241,368L243,343L236,339L221,350L205,344L210,329L199,327L199,319L188,313L190,298ZM311,334L336,314L352,311L374,340L397,351L419,351L428,366L424,376L430,398L438,406L458,406L456,425L451,428L444,421L442,427L427,413L413,380L379,380L375,361L341,333L322,327L324,332L311,334ZM445,328L452,318L466,339L456,340L456,332L445,328Z" fill="#95c6d4" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΔΥΤΙΚΗ ΕΛΛΑΔΑ" data-color="#a8b8dc" d="M273,409L271,421L261,428L263,440L246,446L231,437L225,442L224,467L230,465L241,476L232,487L214,490L202,469L187,459L183,462L180,446L166,439L167,429L182,420L188,400L209,407L228,386L273,409ZM166,310L167,302L188,297L193,304L188,313L199,319L199,327L210,329L205,344L221,350L240,340L241,368L231,373L228,382L198,390L183,369L185,381L172,391L165,386L165,366L159,369L146,337L137,341L134,335L138,321L171,330L166,310Z" fill="#a8b8dc" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΠΕΛΟΠΟΝΝΗΣΟΣ" data-color="#b8acd9" d="M214,489L232,487L241,476L224,466L225,442L231,437L242,445L256,445L263,440L261,428L271,421L273,409L295,414L313,429L322,428L325,439L340,444L335,449L340,473L363,481L359,487L347,487L340,499L331,493L335,482L313,475L306,467L301,470L333,554L328,570L341,591L322,582L309,565L307,552L293,551L281,571L281,595L270,583L274,563L260,542L251,539L251,528L235,532L238,552L231,560L226,551L216,550L216,536L204,513L214,489ZM335,420L340,428L330,432L312,420L321,414L335,420Z" fill="#b8acd9" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΑΤΤΙΚΗ" data-color="#d0a8cd" d="M316,603L321,597L333,611L329,624L320,621L316,603ZM334,423L344,407L336,405L349,403L352,394L368,408L378,404L383,386L405,392L415,401L407,411L415,457L404,458L398,444L372,427L373,418L340,428L334,423ZM360,448L372,448L364,457L360,448ZM359,434L367,427L360,424L370,425L368,434L359,434ZM363,482L340,473L341,467L352,473L356,471L351,464L359,462L356,471L369,481L363,482Z" fill="#d0a8cd" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΔΥΤΙΚΗ ΜΑΚΕΔΟΝΙΑ" data-color="#e4afc1" d="M223,108L227,111L216,115L218,124L233,135L232,149L250,162L255,183L230,214L234,224L197,219L189,226L168,222L146,167L138,170L144,156L153,157L160,148L155,116L192,109L207,115L214,107L223,108Z" fill="#e4afc1" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΗΠΕΙΡΟΣ" data-color="#c7b39a" d="M138,170L146,167L156,186L153,194L164,202L159,209L165,220L182,223L176,229L178,240L167,243L174,265L193,284L188,297L167,302L162,315L142,303L135,313L143,320L135,321L112,287L97,280L95,260L84,259L88,248L74,242L95,243L97,229L107,228L99,209L110,200L129,197L138,170Z" fill="#c7b39a" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΙOΝΙΑ ΝΗΣΙΑ" data-color="#aabf9f" d="M42,234L60,227L68,231L60,245L66,248L68,265L78,267L82,276L63,267L42,234ZM101,401L107,386L117,386L120,372L125,395L131,394L141,411L138,416L116,412L109,392L110,405L101,401ZM125,438L131,430L156,454L146,452L140,460L125,438ZM124,372L130,370L129,383L134,381L137,388L131,389L124,372ZM118,362L123,339L132,333L134,355L126,360L123,355L118,362Z" fill="#aabf9f" stroke="#fff" stroke-width="1.4"></path><path class="prefecture" data-name="ΚΡΗΤΗ" data-color="#80b8aa" d="M412,761L419,760L420,766L412,761ZM368,712L375,679L377,689L385,690L387,670L396,688L411,690L416,681L424,682L424,691L415,693L429,694L434,707L468,699L495,700L497,708L530,714L557,708L553,727L561,733L579,720L591,724L603,711L604,726L597,741L586,745L572,741L471,753L470,735L441,724L375,720L368,712Z" fill="#80b8aa" stroke="#fff" stroke-width="1.4"></path></svg>
+</div>
 <div id="tooltip" class="tooltip"></div>
 </section>
 <aside class="side-card">
@@ -1181,6 +1243,7 @@ html.sepsyg-embedded-frame .map-app{
 
   </div>
 </section>
+</div>
 
 
 <div id="formModal" class="modal" aria-hidden="true">
@@ -1258,6 +1321,16 @@ html.sepsyg-embedded-frame .map-app{
 </div>
 </div>
 </div>
+
+
+<div id="activityDetailModal" class="modal" aria-hidden="true">
+<div class="modal-card activity-detail-card" role="dialog" aria-modal="true">
+<button class="close-btn" type="button" data-close>×</button>
+<div id="activityDetailBody"></div>
+</div>
+</div>
+
+
 
 <script>
 var firebaseConfig={apiKey:"AIzaSyCodx-CuHNysOVROtLcCuRtgxcB4oovPVc",authDomain:"syllogos-map.firebaseapp.com",projectId:"syllogos-map",storageBucket:"syllogos-map.firebasestorage.app",messagingSenderId:"399287687870",appId:"1:399287687870:web:5a1953623334e676af9cef"};
@@ -2471,7 +2544,6 @@ document.querySelectorAll('[data-close]').forEach(function(btn){btn.addEventList
 document.querySelectorAll('.modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)closeModal(m);});});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal(formModal);closeModal(profileModal);closeModal(activityDetailModal);}});
 
-mapHolder.innerHTML="<svg id=\"greeceSvg\" viewBox=\"0 0 900 900\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid meet\"><path class=\"prefecture\" data-name=\"\u0391\u039d\u0391\u03a4\u039f\u039b\u0399\u039aH \u039c\u0391\u039a\u0395\u0394\u039f\u039dI\u0391 \u039a\u0391\u0399 \u0398\u03a1A\u039a\u0397\" data-color=\"#d8a6a6\" d=\"M377,60L401,49L413,52L418,41L424,45L432,39L434,45L453,39L461,55L477,63L486,57L513,74L562,63L569,68L588,62L594,53L582,27L591,20L627,35L631,59L605,73L607,107L583,130L573,117L540,116L504,105L504,99L476,117L462,115L455,105L445,106L436,119L415,131L397,122L417,109L419,100L408,88L403,91L386,80L377,60ZM452,137L464,122L475,129L474,141L463,147L452,137ZM530,157L545,154L552,162L540,165L530,157Z\" fill=\"#d8a6a6\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u039a\u0395\u039d\u03a4\u03a1\u0399\u039a\u0397 \u039c\u0391\u039a\u0395\u0394\u039f\u039d\u0399\u0391\" data-color=\"#e7bd8d\" d=\"M223,108L233,90L246,84L290,88L297,80L304,83L309,64L340,66L349,57L374,59L385,67L386,80L403,91L408,88L419,100L415,112L384,132L402,151L395,152L395,160L407,167L410,159L442,193L434,195L423,178L402,169L387,170L383,177L390,187L408,196L411,207L404,215L380,184L359,178L352,187L316,168L309,154L323,149L316,139L290,158L296,170L287,193L298,213L286,214L270,200L268,188L259,197L259,187L250,186L257,176L250,162L235,156L233,135L218,124L216,115L227,111L223,108ZM351,197L353,187L365,203L388,217L355,212L351,197Z\" fill=\"#e7bd8d\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u0398\u0395\u03a3\u03a3\u0391\u039b\u0399\u0391\" data-color=\"#dfcf86\" d=\"M182,223L189,226L197,219L234,224L230,214L251,187L259,187L259,197L268,188L270,200L283,212L300,213L320,254L333,262L354,297L331,306L332,300L333,305L344,296L334,282L319,277L310,293L323,305L322,314L330,311L319,319L284,310L283,301L263,286L242,312L229,299L218,303L214,288L189,297L193,284L174,265L167,243L178,240L176,229L182,223ZM375,294L391,304L380,306L375,294ZM395,299L405,284L402,297L395,299Z\" fill=\"#dfcf86\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u0392\u039f\u03a1\u0395\u0399\u039f \u0391\u0399\u0393\u0391\u0399\u039f\" data-color=\"#acd09b\" d=\"M491,261L493,255L498,258L491,261ZM496,209L512,207L518,214L531,205L523,231L516,218L508,224L512,230L498,225L496,209ZM563,365L578,358L591,363L591,389L579,406L566,396L577,385L563,365ZM538,359L545,359L544,365L538,359ZM575,474L584,462L608,456L596,469L575,474ZM563,295L567,285L607,274L629,312L624,314L616,303L623,317L611,319L585,306L601,294L591,294L582,306L563,295ZM617,469L620,460L620,473L617,469ZM625,452L640,443L666,446L667,453L646,462L625,452Z\" fill=\"#acd09b\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u039d\u039f\u03a4\u0399\u039f \u0391\u0399\u0393\u0391\u0399\u039f\" data-color=\"#8fc9b6\" d=\"M523,599L530,595L524,587L529,587L534,599L523,599ZM719,621L738,601L765,591L752,632L741,633L728,649L722,644L725,628L719,621ZM686,592L692,586L699,594L686,592ZM599,574L607,576L610,568L617,575L604,583L599,574ZM436,567L438,558L447,563L443,556L455,557L454,565L436,567ZM481,487L484,475L488,477L490,487L481,487ZM726,573L734,570L735,578L726,573ZM514,560L519,552L526,567L514,560ZM501,527L507,517L517,514L514,529L508,533L501,527ZM491,459L510,462L513,472L491,459ZM666,681L681,656L674,680L681,694L671,700L666,681ZM494,532L501,525L499,535L494,532ZM521,522L538,508L543,516L539,535L531,539L521,522ZM466,431L476,423L480,432L489,433L490,456L466,431ZM453,552L459,548L457,554L453,552ZM444,517L454,509L454,516L444,517ZM439,497L446,478L450,487L439,497ZM431,467L436,457L443,459L434,474L431,467ZM654,560L675,542L691,544L660,557L658,565L654,560ZM651,522L665,535L654,536L658,529L651,522ZM555,552L577,537L585,541L561,555L555,552ZM641,512L649,510L652,519L641,512ZM677,653L681,648L681,654L677,653ZM462,527L473,536L468,541L462,527ZM518,484L522,476L532,480L518,484ZM621,499L625,490L625,501L621,499Z\" fill=\"#8fc9b6\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u039a\u0395\u039d\u03a4\u03a1\u0399\u039a\u0397 \u0395\u039b\u039b\u0391\u0394\u0391\" data-color=\"#95c6d4\" d=\"M190,298L214,288L218,303L229,299L242,312L263,286L283,301L284,310L319,319L326,315L305,329L292,325L287,333L328,341L333,355L341,350L352,354L353,369L373,370L383,386L378,404L368,408L356,400L357,394L349,403L320,403L306,398L296,381L288,393L275,375L273,387L228,382L231,373L241,368L243,343L236,339L221,350L205,344L210,329L199,327L199,319L188,313L190,298ZM311,334L336,314L352,311L374,340L397,351L419,351L428,366L424,376L430,398L438,406L458,406L456,425L451,428L444,421L442,427L427,413L413,380L379,380L375,361L341,333L322,327L324,332L311,334ZM445,328L452,318L466,339L456,340L456,332L445,328Z\" fill=\"#95c6d4\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u0394\u03a5\u03a4\u0399\u039a\u0397 \u0395\u039b\u039b\u0391\u0394\u0391\" data-color=\"#a8b8dc\" d=\"M273,409L271,421L261,428L263,440L246,446L231,437L225,442L224,467L230,465L241,476L232,487L214,490L202,469L187,459L183,462L180,446L166,439L167,429L182,420L188,400L209,407L228,386L273,409ZM166,310L167,302L188,297L193,304L188,313L199,319L199,327L210,329L205,344L221,350L240,340L241,368L231,373L228,382L198,390L183,369L185,381L172,391L165,386L165,366L159,369L146,337L137,341L134,335L138,321L171,330L166,310Z\" fill=\"#a8b8dc\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u03a0\u0395\u039b\u039f\u03a0\u039f\u039d\u039d\u0397\u03a3\u039f\u03a3\" data-color=\"#b8acd9\" d=\"M214,489L232,487L241,476L224,466L225,442L231,437L242,445L256,445L263,440L261,428L271,421L273,409L295,414L313,429L322,428L325,439L340,444L335,449L340,473L363,481L359,487L347,487L340,499L331,493L335,482L313,475L306,467L301,470L333,554L328,570L341,591L322,582L309,565L307,552L293,551L281,571L281,595L270,583L274,563L260,542L251,539L251,528L235,532L238,552L231,560L226,551L216,550L216,536L204,513L214,489ZM335,420L340,428L330,432L312,420L321,414L335,420Z\" fill=\"#b8acd9\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u0391\u03a4\u03a4\u0399\u039a\u0397\" data-color=\"#d0a8cd\" d=\"M316,603L321,597L333,611L329,624L320,621L316,603ZM334,423L344,407L336,405L349,403L352,394L368,408L378,404L383,386L405,392L415,401L407,411L415,457L404,458L398,444L372,427L373,418L340,428L334,423ZM360,448L372,448L364,457L360,448ZM359,434L367,427L360,424L370,425L368,434L359,434ZM363,482L340,473L341,467L352,473L356,471L351,464L359,462L356,471L369,481L363,482Z\" fill=\"#d0a8cd\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u0394\u03a5\u03a4\u0399\u039a\u0397 \u039c\u0391\u039a\u0395\u0394\u039f\u039d\u0399\u0391\" data-color=\"#e4afc1\" d=\"M223,108L227,111L216,115L218,124L233,135L232,149L250,162L255,183L230,214L234,224L197,219L189,226L168,222L146,167L138,170L144,156L153,157L160,148L155,116L192,109L207,115L214,107L223,108Z\" fill=\"#e4afc1\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u0397\u03a0\u0395\u0399\u03a1\u039f\u03a3\" data-color=\"#c7b39a\" d=\"M138,170L146,167L156,186L153,194L164,202L159,209L165,220L182,223L176,229L178,240L167,243L174,265L193,284L188,297L167,302L162,315L142,303L135,313L143,320L135,321L112,287L97,280L95,260L84,259L88,248L74,242L95,243L97,229L107,228L99,209L110,200L129,197L138,170Z\" fill=\"#c7b39a\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u0399O\u039d\u0399\u0391 \u039d\u0397\u03a3\u0399\u0391\" data-color=\"#aabf9f\" d=\"M42,234L60,227L68,231L60,245L66,248L68,265L78,267L82,276L63,267L42,234ZM101,401L107,386L117,386L120,372L125,395L131,394L141,411L138,416L116,412L109,392L110,405L101,401ZM125,438L131,430L156,454L146,452L140,460L125,438ZM124,372L130,370L129,383L134,381L137,388L131,389L124,372ZM118,362L123,339L132,333L134,355L126,360L123,355L118,362Z\" fill=\"#aabf9f\" stroke=\"#fff\" stroke-width=\"1.4\"></path><path class=\"prefecture\" data-name=\"\u039a\u03a1\u0397\u03a4\u0397\" data-color=\"#80b8aa\" d=\"M412,761L419,760L420,766L412,761ZM368,712L375,679L377,689L385,690L387,670L396,688L411,690L416,681L424,682L424,691L415,693L429,694L434,707L468,699L495,700L497,708L530,714L557,708L553,727L561,733L579,720L591,724L603,711L604,726L597,741L586,745L572,741L471,753L470,735L441,724L375,720L368,712Z\" fill=\"#80b8aa\" stroke=\"#fff\" stroke-width=\"1.4\"></path></svg>";
 initSvg();
 subscribeTherapists();
 subscribeCalendarBookings();
@@ -2479,36 +2551,44 @@ renderMarkers();
 })();
 </script>
 
-<div id="activityDetailModal" class="modal" aria-hidden="true">
-<div class="modal-card activity-detail-card" role="dialog" aria-modal="true">
-<button class="close-btn" type="button" data-close>×</button>
-<div id="activityDetailBody"></div>
-</div>
-</div>
-
-
 <script>
 (function(){
   if(window.parent===window)return;
 
   var root=document.documentElement;
+  var content=document.getElementById('sepsygEmbedContent');
+
   root.classList.add('sepsyg-embedded-frame');
+
+  if(!content){
+    console.error('SEPSYG embed content wrapper not found');
+    return;
+  }
 
   var raf=0;
   var lastHeight=0;
 
+  function measureContentHeight(){
+    var rect=content.getBoundingClientRect();
+
+    /* rect.height is independent from the iframe viewport height.
+       This is the key difference from body/html scrollHeight. */
+    return Math.ceil(Math.max(
+      content.offsetHeight || 0,
+      content.scrollHeight || 0,
+      rect.height || 0
+    ));
+  }
+
   function sendHeight(){
     cancelAnimationFrame(raf);
-    raf=requestAnimationFrame(function(){
-      var body=document.body;
-      var height=Math.ceil(Math.max(
-        body ? body.scrollHeight : 0,
-        body ? body.offsetHeight : 0,
-        root.scrollHeight,
-        root.offsetHeight
-      ));
 
+    raf=requestAnimationFrame(function(){
+      var height=measureContentHeight();
+
+      if(!height||height<200)return;
       if(Math.abs(height-lastHeight)<2)return;
+
       lastHeight=height;
 
       window.parent.postMessage({
@@ -2521,6 +2601,7 @@ renderMarkers();
 
   function handleParentMessage(event){
     if(event.source!==window.parent)return;
+
     var data=event.data;
     if(!data||data.type!=='SEPSYG_PARENT_VIEWPORT')return;
 
@@ -2531,21 +2612,20 @@ renderMarkers();
     root.style.setProperty('--sepsyg-embed-visible-height',visibleHeight+'px');
   }
 
-  var ro=typeof ResizeObserver!=='undefined' ? new ResizeObserver(sendHeight) : null;
-  if(ro){
-    ro.observe(root);
-    if(document.body)ro.observe(document.body);
-  }
+  var ro=typeof ResizeObserver!=='undefined'
+    ? new ResizeObserver(sendHeight)
+    : null;
+
+  if(ro)ro.observe(content);
 
   var mo=new MutationObserver(sendHeight);
-  if(document.body){
-    mo.observe(document.body,{
-      childList:true,
-      subtree:true,
-      attributes:true,
-      characterData:true
-    });
-  }
+
+  mo.observe(content,{
+    childList:true,
+    subtree:true,
+    attributes:true,
+    characterData:true
+  });
 
   window.addEventListener('resize',sendHeight);
   window.addEventListener('load',sendHeight,true);
@@ -2560,6 +2640,7 @@ renderMarkers();
   setTimeout(sendHeight,80);
   setTimeout(sendHeight,300);
   setTimeout(sendHeight,900);
+  setTimeout(sendHeight,1800);
 })();
 </script>
 
