@@ -1,0 +1,8 @@
+V6.3
+Fixes Carrd giant blank iframe / auto-height feedback loop.
+
+The iframe no longer measures documentElement/body scrollHeight.
+It measures only #sepsygEmbedContent (map + therapist directory).
+Modals stay outside that measured wrapper.
+
+Firebase data, therapist permissions, pins, calendar sync and directory logic are unchanged.

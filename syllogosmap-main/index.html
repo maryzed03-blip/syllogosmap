@@ -1141,9 +1141,48 @@ html.sepsyg-embedded-frame #mapHolder svg{
 }
 </style>
 
+
+<style>
+/* v6.3 — NO AUTOHEIGHT FEEDBACK LOOP */
+html.sepsyg-embedded-frame,
+html.sepsyg-embedded-frame body{
+  min-height:0 !important;
+  height:auto !important;
+  overflow:hidden !important;
+}
+
+html.sepsyg-embedded-frame body{
+  display:block !important;
+}
+
+html.sepsyg-embedded-frame #sepsygEmbedContent{
+  position:relative;
+  width:100%;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible;
+}
+
+html.sepsyg-embedded-frame .map-app{
+  min-height:0 !important;
+}
+
+/* τα modal μένουν εκτός του μετρούμενου content wrapper */
+html.sepsyg-embedded-frame .modal{
+  position:absolute !important;
+  top:var(--sepsyg-embed-visible-top,0px) !important;
+  right:0 !important;
+  bottom:auto !important;
+  left:0 !important;
+  height:var(--sepsyg-embed-visible-height,100vh) !important;
+  min-height:320px;
+}
+</style>
+
 </head>
 <body>
 
+<div id="sepsygEmbedContent">
 <div class="sepsyg-map-top-access">
 <button id="adminButton" class="admin-btn" type="button" aria-label="Προσθήκη θεραπευτή" title="Προσθήκη θεραπευτή">＋</button>
 </div>
@@ -1204,6 +1243,7 @@ html.sepsyg-embedded-frame #mapHolder svg{
 
   </div>
 </section>
+</div>
 
 
 <div id="formModal" class="modal" aria-hidden="true">
@@ -2516,23 +2556,39 @@ renderMarkers();
   if(window.parent===window)return;
 
   var root=document.documentElement;
+  var content=document.getElementById('sepsygEmbedContent');
+
   root.classList.add('sepsyg-embedded-frame');
+
+  if(!content){
+    console.error('SEPSYG embed content wrapper not found');
+    return;
+  }
 
   var raf=0;
   var lastHeight=0;
 
+  function measureContentHeight(){
+    var rect=content.getBoundingClientRect();
+
+    /* rect.height is independent from the iframe viewport height.
+       This is the key difference from body/html scrollHeight. */
+    return Math.ceil(Math.max(
+      content.offsetHeight || 0,
+      content.scrollHeight || 0,
+      rect.height || 0
+    ));
+  }
+
   function sendHeight(){
     cancelAnimationFrame(raf);
-    raf=requestAnimationFrame(function(){
-      var body=document.body;
-      var height=Math.ceil(Math.max(
-        body ? body.scrollHeight : 0,
-        body ? body.offsetHeight : 0,
-        root.scrollHeight,
-        root.offsetHeight
-      ));
 
+    raf=requestAnimationFrame(function(){
+      var height=measureContentHeight();
+
+      if(!height||height<200)return;
       if(Math.abs(height-lastHeight)<2)return;
+
       lastHeight=height;
 
       window.parent.postMessage({
@@ -2545,6 +2601,7 @@ renderMarkers();
 
   function handleParentMessage(event){
     if(event.source!==window.parent)return;
+
     var data=event.data;
     if(!data||data.type!=='SEPSYG_PARENT_VIEWPORT')return;
 
@@ -2555,21 +2612,20 @@ renderMarkers();
     root.style.setProperty('--sepsyg-embed-visible-height',visibleHeight+'px');
   }
 
-  var ro=typeof ResizeObserver!=='undefined' ? new ResizeObserver(sendHeight) : null;
-  if(ro){
-    ro.observe(root);
-    if(document.body)ro.observe(document.body);
-  }
+  var ro=typeof ResizeObserver!=='undefined'
+    ? new ResizeObserver(sendHeight)
+    : null;
+
+  if(ro)ro.observe(content);
 
   var mo=new MutationObserver(sendHeight);
-  if(document.body){
-    mo.observe(document.body,{
-      childList:true,
-      subtree:true,
-      attributes:true,
-      characterData:true
-    });
-  }
+
+  mo.observe(content,{
+    childList:true,
+    subtree:true,
+    attributes:true,
+    characterData:true
+  });
 
   window.addEventListener('resize',sendHeight);
   window.addEventListener('load',sendHeight,true);
@@ -2584,6 +2640,7 @@ renderMarkers();
   setTimeout(sendHeight,80);
   setTimeout(sendHeight,300);
   setTimeout(sendHeight,900);
+  setTimeout(sendHeight,1800);
 })();
 </script>
 
