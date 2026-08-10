@@ -855,6 +855,259 @@ html.sepsyg-embedded-frame .modal-card{
 }
 </style>
 
+
+<style>
+/* ==========================================================
+   SEPSYG MAP v6 — ΑΥΤΟΜΑΤΗ ΛΙΣΤΑ ΘΕΡΑΠΕΥΤΩΝ ΑΝΑ ΠΕΡΙΟΧΗ
+   Ίδια Firebase συλλογή therapists — καμία διπλή καταχώριση
+   ========================================================== */
+
+.therapist-directory-section{
+  width:100%;
+  padding:64px 22px 82px;
+  border-top:1px solid var(--line);
+  background:#FFF9F3;
+}
+
+.therapist-directory-wrap{
+  width:min(1260px,100%);
+  margin:0 auto;
+}
+
+.therapist-directory-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:28px;
+  margin-bottom:34px;
+}
+
+.therapist-directory-head .directory-copy{
+  max-width:760px;
+}
+
+.therapist-directory-head h2{
+  margin:0;
+  color:var(--teal-dark);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(28px,3.5vw,42px);
+  font-weight:500;
+  line-height:1.1;
+}
+
+.therapist-directory-head p{
+  max-width:700px;
+  margin:12px 0 0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+}
+
+.directory-total{
+  flex:0 0 auto;
+  padding:15px 19px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  color:var(--teal-dark);
+  text-align:center;
+  box-shadow:0 12px 28px rgba(23,75,73,.06);
+}
+
+.directory-total strong{
+  display:block;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:24px;
+  font-weight:500;
+}
+
+.directory-total span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+
+.directory-regions{
+  display:grid;
+  gap:42px;
+}
+
+.directory-region{
+  min-width:0;
+}
+
+.directory-region-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:15px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--line);
+}
+
+.directory-region-head h3{
+  margin:0;
+  color:var(--teal-dark);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:23px;
+  font-weight:500;
+  line-height:1.2;
+}
+
+.directory-region-head span{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+
+.directory-cards{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+}
+
+.directory-card{
+  min-width:0;
+  display:grid;
+  grid-template-columns:92px minmax(0,1fr);
+  gap:16px;
+  align-items:stretch;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:#fff;
+  box-shadow:0 12px 30px rgba(23,75,73,.055);
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+
+.directory-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(0,141,139,.25);
+  box-shadow:0 16px 34px rgba(23,75,73,.085);
+}
+
+.directory-photo,
+.directory-initial{
+  width:92px;
+  min-height:126px;
+  height:100%;
+  overflow:hidden;
+  border-radius:15px;
+}
+
+.directory-photo{
+  display:block;
+  object-fit:cover;
+  background:linear-gradient(145deg,var(--sage),var(--sand));
+}
+
+.directory-initial{
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,var(--sage),var(--sand));
+  color:#fff;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:28px;
+  font-weight:700;
+}
+
+.directory-card-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  padding:6px 6px 5px 0;
+}
+
+.directory-card-copy h4{
+  margin:0;
+  color:var(--teal-dark);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:18px;
+  font-weight:500;
+  line-height:1.25;
+}
+
+.directory-card-role{
+  margin:6px 0 0;
+  color:var(--teal-deep);
+  font-size:11px;
+  font-weight:800;
+  line-height:1.4;
+}
+
+.directory-card-area{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+}
+
+.directory-more{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:36px;
+  margin-top:13px;
+  padding:8px 14px;
+  border:1px solid var(--teal);
+  border-radius:999px;
+  background:transparent;
+  color:var(--teal-deep);
+  font-size:11px;
+  font-weight:900;
+  cursor:pointer;
+  transition:.18s ease;
+}
+
+.directory-more:hover{
+  background:var(--teal);
+  color:#fff;
+}
+
+.directory-empty{
+  padding:28px;
+  border:1px dashed var(--line);
+  border-radius:18px;
+  color:var(--muted);
+  text-align:center;
+  font-size:13px;
+}
+
+@media(max-width:1050px){
+  .directory-cards{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+
+@media(max-width:720px){
+  .therapist-directory-section{padding:48px 14px 62px;}
+  .therapist-directory-head{
+    align-items:flex-start;
+    flex-direction:column;
+    margin-bottom:28px;
+  }
+  .directory-total{padding:11px 15px;}
+  .directory-cards{grid-template-columns:1fr;}
+}
+
+@media(max-width:430px){
+  .directory-card{
+    grid-template-columns:78px minmax(0,1fr);
+    gap:13px;
+  }
+  .directory-photo,
+  .directory-initial{
+    width:78px;
+    min-height:112px;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -888,6 +1141,35 @@ html.sepsyg-embedded-frame .modal-card{
 </div>
 </div>
 </main>
+
+
+<section class="therapist-directory-section" id="therapists-directory" aria-labelledby="therapistsDirectoryTitle">
+  <div class="therapist-directory-wrap">
+
+    <div class="therapist-directory-head">
+      <div class="directory-copy">
+        <span class="eyebrow">Δίκτυο Σ.Ε.ΨΥ.G.</span>
+        <h2 id="therapistsDirectoryTitle">Όλοι οι Θεραπευτές του Συλλόγου</h2>
+        <p>
+          Οι θεραπευτές εμφανίζονται αυτόματα ανά περιοχή από τα ίδια στοιχεία
+          που έχουν καταχωριστεί στον Χάρτη. Πάτησε «Δείτε περισσότερα» για το πλήρες προφίλ.
+        </p>
+      </div>
+
+      <div class="directory-total">
+        <strong id="directoryTotalCount">0</strong>
+        <span>Θεραπευτές</span>
+      </div>
+    </div>
+
+    <div id="therapistDirectoryRegions" class="directory-regions"></div>
+    <div id="therapistDirectoryEmpty" class="directory-empty" style="display:none;">
+      Δεν υπάρχουν ακόμη καταχωριμένοι θεραπευτές.
+    </div>
+
+  </div>
+</section>
+
 
 <div id="formModal" class="modal" aria-hidden="true">
 <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="formTitle">
@@ -1023,6 +1305,9 @@ var adminNoteText=document.getElementById('adminNoteText');
 var pinContinueButton=document.getElementById('pinContinueButton');
 var tooltip=document.getElementById('tooltip');
 var count=document.getElementById('count');
+var therapistDirectoryRegions=document.getElementById('therapistDirectoryRegions');
+var therapistDirectoryEmpty=document.getElementById('therapistDirectoryEmpty');
+var directoryTotalCount=document.getElementById('directoryTotalCount');
 var formModal=document.getElementById('formModal');
 var profileModal=document.getElementById('profileModal');
 var form=document.getElementById('therapistForm');
@@ -1226,6 +1511,7 @@ function subscribeTherapists(){
       therapists.push(data);
     });
     renderMarkers();
+    renderTherapistDirectory();
   },function(err){
     console.error('Firestore error',err);
     window.alert('Δεν ήταν δυνατή η σύνδεση με τη βάση δεδομένων.');
@@ -1493,6 +1779,119 @@ function markerNode(t,colorIndex){
     showProfile(t.id,true);
   });
   return g;
+}
+
+
+function regionDisplayName(raw){
+  var value=String(raw||'').trim();
+  if(!value)return 'Άλλη περιοχή';
+
+  var upper=value.toLocaleUpperCase('el');
+
+  if(upper.indexOf('ΑΤΤ')!==-1)return 'Αττική';
+  if(upper.indexOf('ΚΕΝΤΡΙΚ')!==-1&&upper.indexOf('ΜΑΚ')!==-1)return 'Κεντρική Μακεδονία';
+  if(upper.indexOf('ΔΥΤΙΚ')!==-1&&upper.indexOf('ΜΑΚ')!==-1)return 'Δυτική Μακεδονία';
+  if(upper.indexOf('ΑΝΑΤΟΛ')!==-1&&upper.indexOf('ΜΑΚ')!==-1)return 'Ανατολική Μακεδονία & Θράκη';
+  if(upper.indexOf('ΘΕΣΣΑΛ')!==-1)return 'Θεσσαλία';
+  if(upper.indexOf('ΗΠΕΙΡ')!==-1)return 'Ήπειρος';
+  if(upper.indexOf('ΙΟΝ')!==-1)return 'Ιόνια Νησιά';
+  if(upper.indexOf('ΒΟΡΕΙ')!==-1&&upper.indexOf('ΑΙΓ')!==-1)return 'Βόρειο Αιγαίο';
+  if(upper.indexOf('ΝΟΤΙ')!==-1&&upper.indexOf('ΑΙΓ')!==-1)return 'Νότιο Αιγαίο';
+  if(upper.indexOf('ΚΡΗΤ')!==-1)return 'Κρήτη';
+  if(upper.indexOf('ΠΕΛΟΠ')!==-1)return 'Πελοπόννησος';
+  if(upper.indexOf('ΔΥΤΙΚ')!==-1&&upper.indexOf('ΕΛΛ')!==-1)return 'Δυτική Ελλάδα';
+  if(upper.indexOf('ΚΕΝΤΡΙΚ')!==-1&&upper.indexOf('ΕΛΛ')!==-1)return 'Κεντρική Ελλάδα';
+
+  return value
+    .toLocaleLowerCase('el')
+    .replace(/(^|[\s/()-])([^\s/()-])/g,function(_,space,char){
+      return space+char.toLocaleUpperCase('el');
+    });
+}
+
+function directoryGroupName(t){
+  if(t.prefecture)return regionDisplayName(t.prefecture);
+  if(t.area)return String(t.area).trim();
+  return 'Άλλη περιοχή';
+}
+
+function directoryPhotoHtml(t){
+  if(t.photo){
+    return '<img class="directory-photo" src="'+escapeHtml(t.photo)+'" alt="'+escapeHtml(t.name||'')+'" loading="lazy">';
+  }
+
+  var initial=(t.name||'?').trim().charAt(0).toLocaleUpperCase('el');
+  return '<div class="directory-initial" aria-hidden="true">'+escapeHtml(initial)+'</div>';
+}
+
+function renderTherapistDirectory(){
+  if(!therapistDirectoryRegions||!directoryTotalCount)return;
+
+  var list=therapists.slice().sort(function(a,b){
+    var groupA=directoryGroupName(a);
+    var groupB=directoryGroupName(b);
+    var groupCompare=groupA.localeCompare(groupB,'el',{sensitivity:'base'});
+    if(groupCompare!==0)return groupCompare;
+    return String(a.name||'').localeCompare(String(b.name||''),'el',{sensitivity:'base'});
+  });
+
+  directoryTotalCount.textContent=String(list.length);
+  therapistDirectoryRegions.innerHTML='';
+
+  if(!list.length){
+    therapistDirectoryEmpty.style.display='block';
+    return;
+  }
+
+  therapistDirectoryEmpty.style.display='none';
+
+  var groups={};
+  list.forEach(function(t){
+    var group=directoryGroupName(t);
+    if(!groups[group])groups[group]=[];
+    groups[group].push(t);
+  });
+
+  Object.keys(groups)
+    .sort(function(a,b){return a.localeCompare(b,'el',{sensitivity:'base'});})
+    .forEach(function(groupName){
+      var region=document.createElement('section');
+      region.className='directory-region';
+
+      var therapistsInRegion=groups[groupName];
+      var label=therapistsInRegion.length===1?'1 θεραπευτής':therapistsInRegion.length+' θεραπευτές';
+
+      region.innerHTML=
+        '<div class="directory-region-head">'+
+          '<h3>'+escapeHtml(groupName)+'</h3>'+
+          '<span>'+escapeHtml(label)+'</span>'+
+        '</div>'+
+        '<div class="directory-cards"></div>';
+
+      var cards=region.querySelector('.directory-cards');
+
+      therapistsInRegion.forEach(function(t){
+        var card=document.createElement('article');
+        card.className='directory-card';
+
+        card.innerHTML=
+          directoryPhotoHtml(t)+
+          '<div class="directory-card-copy">'+
+            '<h4>'+escapeHtml(t.name||'')+'</h4>'+
+            (t.role?'<p class="directory-card-role">'+escapeHtml(t.role)+'</p>':'')+
+            (t.area?'<p class="directory-card-area">'+escapeHtml(t.area)+'</p>':'')+
+            '<button class="directory-more" type="button">Δείτε περισσότερα</button>'+
+          '</div>';
+
+        card.querySelector('.directory-more').addEventListener('click',function(){
+          showProfile(t.id,true);
+        });
+
+        cards.appendChild(card);
+      });
+
+      therapistDirectoryRegions.appendChild(region);
+    });
 }
 
 function renderMarkers(){
