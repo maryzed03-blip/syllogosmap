@@ -706,8 +706,9 @@ body {
 </style>
 
 <style>
-/* SEPSYG MAP v2.1 — διακριτικό + πάνω στη σελίδα */
+/* SEPSYG MAP v2.1 — public management shortcut removed */
 .sepsyg-map-top-access{
+  display:none !important;
   width:min(1180px,calc(100% - 28px));
   margin:10px auto 2px;
   display:flex;
@@ -1183,8 +1184,8 @@ html.sepsyg-embedded-frame .modal{
 <body>
 
 <div id="sepsygEmbedContent">
-<div class="sepsyg-map-top-access">
-<button id="adminButton" class="admin-btn" type="button" aria-label="Προσθήκη θεραπευτή" title="Προσθήκη θεραπευτή">＋</button>
+<div class="sepsyg-map-top-access" aria-hidden="true">
+<button id="adminButton" class="admin-btn" type="button" hidden tabindex="-1"></button>
 </div>
 
 <main class="map-app">
@@ -1380,8 +1381,15 @@ var calendarBookings=LEGACY_PUBLIC_BOOKINGS.slice();
 'use strict';
 var SVG_NS='http://www.w3.org/2000/svg';
 var VB_W=900,VB_H=900;
-var OWNER_CODE='1111';
-var SUPER_ADMIN_CODE='2222';
+var portalMode=false;
+var portalRole='';
+var portalMemberName='';
+var portalActivated=false;
+try{
+  portalMode=new URLSearchParams(window.location.search).get('portal')==='1';
+  portalRole=window.sessionStorage.getItem('association-manage-role')||'';
+  portalMemberName=window.sessionStorage.getItem('association-portal-name')||'';
+}catch(_err){}
 
 var mapHolder=document.getElementById('mapHolder');
 var adminButton=document.getElementById('adminButton');
@@ -1439,8 +1447,13 @@ function openModal(m){m.classList.add('open');m.setAttribute('aria-hidden','fals
 function closeModal(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}
 
 function isTherapistOwner(t){
+  if(!t)return false;
+  if(portalMode&&portalMemberName){
+    var loginName=normalizePersonName(portalMemberName);
+    var recordName=normalizePersonName(t.owner_name||t.name||'');
+    if(loginName&&recordName&&loginName===recordName)return true;
+  }
   return Boolean(
-    t &&
     currentMapUid &&
     t.owner_uid &&
     String(t.owner_uid)===String(currentMapUid)
@@ -1454,8 +1467,9 @@ function canManageTherapist(t){
 }
 
 function accessModeLabel(){
-  return superAdminMode ? 'Διαχείριση 2222' : 'Προσωπική διαχείριση';
+  return superAdminMode ? 'Διοικητική διαχείριση' : 'Προσωπική διαχείριση';
 }
+
 
 function escapeHtml(v){return String(v||'').split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split("'").join('&#039;');}
 
@@ -1508,10 +1522,10 @@ function calendarBookingToSeminar(booking){
     cost:'',
     image:booking.image_url||'',
     detailImage:booking.detail_image_url||'',
-    longDescription:booking.long_description||'',
-    audience:booking.audience||'',
-    programDetails:booking.program_details||'',
-    activityCategory:booking.activity_category||'association_free',
+    longDescription:String(booking.long_description||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(),
+    audience:String(booking.audience||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(),
+    programDetails:String(booking.program_details||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(),
+    activityCategory:booking.activity_category==='association_free'?'association_free':((booking.activity_category==='therapist_action'||booking.activity_category==='therapist_independent')?'therapist_action':'association'),
     generalPrice:booking.general_price||'',
     offersMemberDiscount:booking.offers_member_discount===true,
     memberPrice:booking.member_price||'',
@@ -1519,8 +1533,8 @@ function calendarBookingToSeminar(booking){
     additionalCoordinatorPhoto:booking.additional_coordinator_photo_url||'',
     coordinatorRole:booking.therapist_role||'',
     additionalCoordinatorRole:booking.additional_coordinator_role||'',
-    link:'https://hmerologiosillogou.vercel.app/?event='+encodeURIComponent(booking.booking_date||''),
-    desc:booking.description||'',
+    link:'https://hmerologiosillogou.vercel.app/events?event='+encodeURIComponent(booking.booking_date||''),
+    desc:String(booking.description||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(),
     coordinators:names.join(' & ')
   };
 }
@@ -1585,6 +1599,18 @@ mapAuth.onAuthStateChanged(function(user){
       editButton.style.display=canManage?'inline-flex':'none';
     }
   }
+});
+
+window.addEventListener('message',function(event){
+  if(!portalMode)return;
+  var data=event&&event.data;
+  if(!data||data.type!=='sepsyg-portal-auth')return;
+  var allowedOrigin=String(event.origin||'');
+  if(allowedOrigin && allowedOrigin.indexOf('hmerologiosillogou.vercel.app')===-1 && !allowedOrigin.endsWith('.vercel.app') && allowedOrigin.indexOf('localhost')===-1)return;
+  if(data.role!=='member'&&data.role!=='admin')return;
+  portalRole=data.role;
+  portalMemberName=String(data.name||'').trim();
+  activatePortalManagement();
 });
 
 function subscribeTherapists(){
@@ -1688,8 +1714,8 @@ function updateAdminPlacementMessage(isEditing){
 
   if(!pendingPoint){
     adminNoteText.textContent=superAdminMode
-      ? '2222: πάτησε οπουδήποτε στον χάρτη για νέα πινέζα ή άνοιξε οποιοδήποτε προφίλ για επεξεργασία/διαγραφή.'
-      : '1111: πάτησε οπουδήποτε για νέα πινέζα. Μπορείς να αλλάξεις ή να διαγράψεις μόνο προφίλ που δημιούργησες εσύ.';
+      ? 'Πάτησε οπουδήποτε στον χάρτη για νέα πινέζα ή άνοιξε οποιοδήποτε προφίλ για επεξεργασία/διαγραφή.'
+      : 'Πάτησε οπουδήποτε για νέα πινέζα. Μπορείς να αλλάξεις ή να διαγράψεις μόνο προφίλ που δημιούργησες εσύ.';
     pinContinueButton.style.display='none';
     return;
   }
@@ -2108,15 +2134,17 @@ function mapCoordinatorPhoto(name,fallback){
 
 function mapActivityCategoryLabel(s){
   if(s.activityCategory==='association_free')return 'Δωρεάν Δράση Συλλόγου';
-  if(s.activityCategory==='therapist_independent')return 'Ανεξάρτητη Δράση Θεραπευτή Συλλόγου';
+  if(s.activityCategory==='therapist_action')return 'Δράση Θεραπευτή Συλλόγου';
   return 'Δράση Συλλόγου';
 }
 
+
 function mapActivityCategoryClass(s){
   if(s.activityCategory==='association_free')return 'activity-free';
-  if(s.activityCategory==='therapist_independent')return 'activity-independent';
+  if(s.activityCategory==='therapist_action')return 'activity-independent';
   return 'activity-association';
 }
+
 
 function mapActivityPrice(s){
   if(s.activityCategory==='association_free')return 'Δωρεάν';
@@ -2346,53 +2374,25 @@ function fileToCompressedDataUrl(file){
   });
 }
 
-adminButton.addEventListener('click',function(){
-  if(adminMode){
-    adminMode=false;
-    superAdminMode=false;
-    pendingPoint=null;
-    pendingPrefecture='';
-    editingId=null;
-    draftDragging=false;
-    adminNote.classList.remove('visible');
-    mapHolder.style.cursor='';
-    updateAdminPlacementMessage(false);
-    renderMarkers();
-    return;
-  }
-
-  var code=window.prompt('Κωδικός διαχείρισης');
-  if(code===null)return;
-
-  if(code!==OWNER_CODE&&code!==SUPER_ADMIN_CODE){
-    window.alert('Λανθασμένος κωδικός.');
-    return;
-  }
+function activatePortalManagement(){
+  if(portalActivated || !portalMode || (portalRole!=='member' && portalRole!=='admin'))return;
+  portalActivated=true;
 
   ensureMapAuth().then(function(uid){
-    if(!uid){
-      window.alert('Δεν ήταν δυνατή η σύνδεση με το Firebase. Δοκίμασε ξανά.');
-      return;
-    }
-
+    if(!uid){portalActivated=false;return;}
     adminMode=true;
-    superAdminMode=(code===SUPER_ADMIN_CODE);
+    superAdminMode=(portalRole==='admin');
     pendingPoint=null;
     pendingPrefecture='';
     editingId=null;
     adminNote.classList.add('visible');
     mapHolder.style.cursor='crosshair';
-
-    if(superAdminMode){
-      adminNoteText.textContent='Διαχείριση 2222: μπορείς να προσθέσεις, να επεξεργαστείς ή να διαγράψεις οποιονδήποτε θεραπευτή.';
-    }else{
-      adminNoteText.textContent='Με το 1111 μπορείς να προσθέσεις νέο προφίλ και να επεξεργάζεσαι ή να διαγράφεις μόνο όσα δημιούργησες εσύ.';
-    }
-
+    var prefix=portalMemberName ? portalMemberName+', ' : '';
+    adminNoteText.textContent=prefix+'για νέα καταχώριση πάτησε σε ένα σημείο του χάρτη. Για αλλαγή υπάρχοντος προφίλ, άνοιξε πρώτα την πινέζα του.';
     updateAdminPlacementMessage(false);
     renderMarkers();
   });
-});
+}
 
 function prepareTherapistForm(){
   form.reset();
@@ -2410,6 +2410,7 @@ function prepareTherapistForm(){
     document.getElementById('formTitle').textContent='Επεξεργασία θεραπευτή';
   }else{
     document.getElementById('formTitle').textContent='Νέος θεραπευτής';
+    if(portalMemberName&&form.name)form.name.value=portalMemberName;
   }
 
   document.getElementById('formHelper').style.display='block';
@@ -2490,6 +2491,7 @@ form.addEventListener('submit',async function(evt){
       }
 
       payload.owner_uid=currentMapUid;
+      if(portalMemberName)payload.owner_name=portalMemberName;
       payload.createdAt=Date.now();
       await therapistsCol.add(payload);
     }
@@ -2520,12 +2522,12 @@ deleteButton.addEventListener('click',async function(){
   if(!therapist)return;
 
   if(!canManageTherapist(therapist)){
-    window.alert('Με το 1111 μπορείς να διαγράψεις μόνο τη δική σου καταχώριση. Ο κωδικός 2222 μπορεί να διαγράψει οποιονδήποτε θεραπευτή.');
+    window.alert('Μπορείς να διαγράψεις μόνο τη δική σου καταχώριση.');
     return;
   }
 
   var message=superAdminMode
-    ? 'Να διαγραφεί ο θεραπευτής; Η διαγραφή με 2222 είναι οριστική.'
+    ? 'Να διαγραφεί ο θεραπευτής; Η διαγραφή είναι οριστική.'
     : 'Να διαγραφεί η δική σου καταχώριση;';
 
   if(!window.confirm(message))return;
@@ -2547,6 +2549,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal(
 initSvg();
 subscribeTherapists();
 subscribeCalendarBookings();
+activatePortalManagement();
 renderMarkers();
 })();
 </script>
