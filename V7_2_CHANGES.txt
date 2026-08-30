@@ -1,0 +1,4 @@
+SEPSYG syllogosmap V7.2
+- Η toolbar του rich-text βιογραφικού είναι sticky και ακολουθεί το scroll μέσα στη φόρμα.
+- Διατηρείται η προστασία safe draft / Έξοδος της V7.1.
+- Inline JavaScript syntax check: OK.

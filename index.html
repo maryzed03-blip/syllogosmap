@@ -20,7 +20,8 @@
 .profile-h3{margin:0;color:var(--teal-dark);font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:500;}
 .profile-role{margin:5px 0 3px;color:var(--teal);font-size:14px;font-weight:800;}
 .profile-area{margin:0;color:var(--muted);font-size:13px;}
-.profile-bio{margin:0 0 20px;color:var(--ink);line-height:1.8;text-align:left;font-size:15px;white-space:pre-wrap;}
+.profile-bio{margin:0 0 20px;color:var(--ink);line-height:1.8;text-align:left;font-size:15px;white-space:normal;}
+.profile-bio b,.profile-bio strong{font-weight:800!important;}.profile-bio u{text-underline-offset:3px;}
 .profile-links{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 26px;}
 .profile-links a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 16px;border-radius:999px;font-size:13px;font-weight:800;text-decoration:none;background:var(--teal);color:#fff;}
 .section-label{margin:0 0 12px;color:var(--teal-dark);font-family:Georgia,"Times New Roman",serif;font-size:18px;font-weight:500;border-top:1px solid var(--line);padding-top:20px;}
@@ -59,6 +60,30 @@
 .pref-empty{color:var(--muted);font-size:14px;font-style:italic;}
 </style>
 
+
+<style>
+/* SEPSYG V7 — rich text editor for therapist biography */
+.map-rich-editor{overflow:visible;border:1px solid var(--line);border-radius:13px;background:#FFFCF9;}
+.map-rich-controls{position:sticky;top:0;z-index:20;border-radius:13px 13px 0 0;box-shadow:0 6px 16px rgba(15,23,42,.06);}.map-rich-toolbar,.map-rich-emoji-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:7px 8px;border-bottom:1px solid var(--line);background:#F8F6F3;}
+.map-rich-emoji-row{background:#fff;padding-top:5px;padding-bottom:5px;}
+.map-rich-toolbar button,.map-rich-emoji-row button{min-width:30px;height:29px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(23,75,73,.16);border-radius:7px;background:#fff;color:var(--teal-dark);font-size:12px;font-weight:800;cursor:pointer;}
+.map-rich-toolbar button:hover,.map-rich-emoji-row button:hover{border-color:var(--teal);background:#F0FAF8;}
+.map-rich-toolbar .map-rich-color{width:25px;min-width:25px;padding:0;}
+.map-rich-color span{width:13px;height:13px;border-radius:50%;border:1px solid rgba(0,0,0,.12);}
+.map-rich-separator{width:1px;height:22px;background:var(--line);margin:0 1px;}
+.map-rich-editor-area{min-height:125px;padding:12px 13px;outline:none;color:var(--ink);font-size:14px;line-height:1.7;background:#FFFDFC;}
+.map-rich-editor-area:empty:before{content:attr(data-placeholder);color:#9AA5A1;pointer-events:none;}
+.map-rich-editor-area b,.map-rich-editor-area strong{font-weight:800!important;}.map-rich-editor-area u{text-underline-offset:3px;}
+#formModal .close-btn{display:none!important;}
+.map-form-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px;}
+.map-form-actions .submit-btn{width:100%;margin-top:0;}
+.map-exit-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 25px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--teal-dark);font-weight:800;cursor:pointer;}
+.map-exit-btn:hover{background:#F7F2ED;}
+.map-exit-btn:disabled{opacity:.55;cursor:not-allowed;}
+.map-draft-note{display:none;margin:12px 0 0;padding:10px 12px;border:1px solid rgba(0,141,139,.2);border-radius:11px;background:#F0FAF8;color:#0B6965;font-size:12px;font-weight:700;line-height:1.5;}
+.map-draft-note.visible{display:block;}
+@media(max-width:520px){.map-form-actions{grid-template-columns:1fr;}}
+</style>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -1260,10 +1285,38 @@ html.sepsyg-embedded-frame .modal{
 <div class="field"><label for="email">Email</label><input id="email" name="email" type="email"></div>
 <div class="field"><label for="phone">Τηλέφωνο</label><input id="phone" name="phone" type="tel"></div>
 <div class="field full"><label for="photo">Φωτογραφία</label><input id="photo" name="photo" type="file" accept="image/*"></div>
-<div class="field full"><label for="bio">Σύντομο βιογραφικό *</label><textarea id="bio" name="bio" required></textarea></div>
+<div class="field full"><label for="bioEditor">Σύντομο βιογραφικό *</label>
+<div class="map-rich-editor">
+  <div class="map-rich-controls">
+  <div class="map-rich-toolbar" aria-label="Εργαλεία μορφοποίησης βιογραφικού">
+    <button type="button" data-rich-cmd="bold" title="Έντονα"><strong>B</strong></button>
+    <button type="button" data-rich-cmd="underline" title="Υπογράμμιση"><u>U</u></button>
+    <span class="map-rich-separator"></span>
+    <button type="button" data-rich-size="2" title="Μικρότερα γράμματα">A−</button>
+    <button type="button" data-rich-size="3" title="Κανονικό μέγεθος">A</button>
+    <button type="button" data-rich-size="5" title="Μεγαλύτερα γράμματα">A+</button>
+    <button type="button" data-rich-size="6" title="Πολύ μεγάλα γράμματα">A++</button>
+    <span class="map-rich-separator"></span>
+    <button type="button" class="map-rich-color" data-rich-color="#174B49" title="Σκούρο πράσινο"><span style="background:#174B49"></span></button>
+    <button type="button" class="map-rich-color" data-rich-color="#008D8B" title="Teal"><span style="background:#008D8B"></span></button>
+    <button type="button" class="map-rich-color" data-rich-color="#8B5E3C" title="Καφέ"><span style="background:#8B5E3C"></span></button>
+    <button type="button" class="map-rich-color" data-rich-color="#7C3AED" title="Μωβ"><span style="background:#7C3AED"></span></button>
+    <button type="button" class="map-rich-color" data-rich-color="#B91C1C" title="Κόκκινο"><span style="background:#B91C1C"></span></button>
+  </div>
+  <div class="map-rich-emoji-row" aria-label="Emoji">
+    <button type="button" data-rich-insert="✨">✨</button><button type="button" data-rich-insert="📌">📌</button><button type="button" data-rich-insert="✅">✅</button><button type="button" data-rich-insert="💬">💬</button><button type="button" data-rich-insert="🌿">🌿</button><button type="button" data-rich-insert="🧠">🧠</button><button type="button" data-rich-insert="❤️">❤️</button><button type="button" data-rich-insert="🎯">🎯</button>
+  </div>
+  </div>
+  <div id="bioEditor" class="map-rich-editor-area" contenteditable="true" data-placeholder="Γράψε το βιογραφικό…"></div>
+  <textarea id="bio" name="bio" style="display:none"></textarea>
+</div></div>
 </div>
-<p class="helper" id="formHelper">Η πινέζα αποθηκεύεται ακριβώς στη θέση που επέλεξες. Αν θέλεις αλλαγή, κλείσε τη φόρμα και σύρε την πινέζα.</p>
+<p class="helper" id="formHelper">Η πινέζα αποθηκεύεται ακριβώς στη θέση που επέλεξες. Αν θέλεις αλλαγή, πάτησε «Έξοδος» και σύρε την πινέζα.</p>
+<p class="map-draft-note" id="therapistDraftNote">✓ Επαναφέρθηκε προσωρινό πρόχειρο από αυτόν τον browser.</p>
+<div class="map-form-actions">
+<button class="map-exit-btn" id="formExitButton" type="button">Έξοδος</button>
 <button class="submit-btn" type="submit">Αποθήκευση θεραπευτή</button>
+</div>
 </form>
 </div>
 </div>
@@ -1405,6 +1458,10 @@ var formModal=document.getElementById('formModal');
 var profileModal=document.getElementById('profileModal');
 var form=document.getElementById('therapistForm');
 var photoInput=document.getElementById('photo');
+var bioInput=document.getElementById('bio');
+var bioEditor=document.getElementById('bioEditor');
+var formExitButton=document.getElementById('formExitButton');
+var therapistDraftNote=document.getElementById('therapistDraftNote');
 var profilePhoto=document.getElementById('profilePhoto');
 var profileNameCompact=document.getElementById('profileNameCompact');
 var profileRoleCompact=document.getElementById('profileRoleCompact');
@@ -1442,9 +1499,74 @@ var editingId=null;
 var selectedPath=null;
 var draftDragging=false;
 var draftPinNode=null;
+var therapistDraftTimer=0;
+var therapistFormBaseline='';
 
 function openModal(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}
 function closeModal(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}
+
+function therapistDraftKey(){
+  var who=normalizePersonName(portalMemberName||'portal')||'portal';
+  return 'sepsyg-map-therapist-draft-v1:'+(editingId||'new')+':'+who;
+}
+function therapistFormState(){
+  syncBioEditor();
+  return {
+    name:String(form.name&&form.name.value||''),
+    role:String(form.role&&form.role.value||''),
+    area:String(form.area&&form.area.value||''),
+    email:String(form.email&&form.email.value||''),
+    phone:String(form.phone&&form.phone.value||''),
+    bio:String(bioInput&&bioInput.value||''),
+    pendingPoint:pendingPoint?{x:Number(pendingPoint.x)||0,y:Number(pendingPoint.y)||0}:null,
+    pendingPrefecture:String(pendingPrefecture||'')
+  };
+}
+function therapistFormFingerprint(){return JSON.stringify(therapistFormState());}
+function saveTherapistDraft(){
+  if(!formModal.classList.contains('open'))return;
+  try{
+    localStorage.setItem(therapistDraftKey(),JSON.stringify({value:therapistFormState(),saved_at:new Date().toISOString()}));
+  }catch(_err){}
+}
+function scheduleTherapistDraft(){
+  clearTimeout(therapistDraftTimer);
+  therapistDraftTimer=setTimeout(saveTherapistDraft,220);
+}
+function clearTherapistDraft(key){
+  try{localStorage.removeItem(key||therapistDraftKey());}catch(_err){}
+}
+function restoreTherapistDraft(){
+  var restored=false;
+  try{
+    var raw=localStorage.getItem(therapistDraftKey());
+    var parsed=raw?JSON.parse(raw):null;
+    var d=parsed&&parsed.value;
+    if(d&&typeof d==='object'){
+      if(form.name&&typeof d.name==='string')form.name.value=d.name;
+      if(form.role&&typeof d.role==='string')form.role.value=d.role;
+      if(form.area&&typeof d.area==='string')form.area.value=d.area;
+      if(form.email&&typeof d.email==='string')form.email.value=d.email;
+      if(form.phone&&typeof d.phone==='string')form.phone.value=d.phone;
+      if(typeof d.bio==='string')setBioEditor(d.bio);
+      if(d.pendingPoint&&Number.isFinite(Number(d.pendingPoint.x))&&Number.isFinite(Number(d.pendingPoint.y))){
+        pendingPoint={x:Number(d.pendingPoint.x),y:Number(d.pendingPoint.y)};
+      }
+      if(typeof d.pendingPrefecture==='string'&&d.pendingPrefecture)pendingPrefecture=d.pendingPrefecture;
+      restored=true;
+    }
+  }catch(_err){}
+  if(therapistDraftNote)therapistDraftNote.classList.toggle('visible',restored);
+  return restored;
+}
+function closeTherapistEditorSafely(){
+  var changed=therapistFormFingerprint()!==therapistFormBaseline;
+  if(changed){
+    saveTherapistDraft();
+    if(!window.confirm('Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί οριστικά. Έχουν κρατηθεί προσωρινά σε αυτόν τον browser. Θέλεις να βγεις από την επεξεργασία;'))return;
+  }
+  closeModal(formModal);
+}
 
 function isTherapistOwner(t){
   if(!t)return false;
@@ -1472,6 +1594,41 @@ function accessModeLabel(){
 
 
 function escapeHtml(v){return String(v||'').split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split("'").join('&#039;');}
+
+function mapLooksLikeHtml(value){return /<\/?[a-z][\s\S]*>/i.test(String(value||''));}
+function mapPlainToRichHtml(value){return escapeHtml(value).replace(/\r?\n/g,'<br>');}
+function mapSafeColor(value){return /^(#[0-9a-f]{3,8}|rgb(a)?\([0-9.,%\s]+\)|[a-z]+)$/i.test(String(value||'').trim());}
+function mapSafeFontSize(value){var v=String(value||'').trim().toLowerCase();if(!/^(\d+(?:\.\d+)?)(px|rem|em|%)$/.test(v))return false;var n=parseFloat(v);return isFinite(n)&&n>0&&n<=(v.endsWith('px')?72:v.endsWith('%')?300:4);}
+var MAP_RICH_FONT_SIZE={'1':'0.75rem','2':'0.875rem','3':'1rem','4':'1.15rem','5':'1.35rem','6':'1.65rem','7':'2rem'};
+function sanitizeMapRichHtml(value){
+  var prepared=mapLooksLikeHtml(value)?String(value||''):mapPlainToRichHtml(value);
+  if(!prepared.trim())return '';
+  var parser=new DOMParser();
+  var docValue=parser.parseFromString('<div id="map-rich-root">'+prepared+'</div>','text/html');
+  var root=docValue.getElementById('map-rich-root');if(!root)return mapPlainToRichHtml(value);
+  var allowed={B:1,STRONG:1,U:1,EM:1,I:1,BR:1,P:1,DIV:1,SPAN:1,UL:1,OL:1,LI:1,FONT:1};
+  function cleanNode(node){
+    if(node.nodeType===3)return escapeHtml(node.textContent||'');
+    if(node.nodeType!==1)return '';
+    var el=node;var tag=String(el.tagName||'').toUpperCase();var children=Array.prototype.map.call(el.childNodes,cleanNode).join('');
+    if(!allowed[tag])return children;if(tag==='BR')return '<br>';
+    if(tag==='FONT'){
+      var styles=[];var color=el.getAttribute('color')||'';var size=el.getAttribute('size')||'';
+      if(color&&mapSafeColor(color))styles.push('color:'+escapeHtml(color));if(size&&MAP_RICH_FONT_SIZE[size])styles.push('font-size:'+MAP_RICH_FONT_SIZE[size]);
+      return styles.length?'<span style="'+styles.join(';')+'">'+children+'</span>':children;
+    }
+    if(tag==='SPAN'){
+      var spanStyles=[];var c=el.style&&el.style.color||'';var f=el.style&&el.style.fontSize||'';
+      if(c&&mapSafeColor(c))spanStyles.push('color:'+escapeHtml(c));if(f&&mapSafeFontSize(f))spanStyles.push('font-size:'+escapeHtml(f));
+      return spanStyles.length?'<span style="'+spanStyles.join(';')+'">'+children+'</span>':'<span>'+children+'</span>';
+    }
+    var safe=tag.toLowerCase();return '<'+safe+'>'+children+'</'+safe+'>';
+  }
+  return Array.prototype.map.call(root.childNodes,cleanNode).join('');
+}
+function syncBioEditor(){if(!bioInput||!bioEditor)return;bioInput.value=sanitizeMapRichHtml(bioEditor.innerHTML);}
+function setBioEditor(value){if(!bioInput||!bioEditor)return;var safe=sanitizeMapRichHtml(value||'');bioInput.value=safe;bioEditor.innerHTML=safe;}
+function runBioCommand(command,value){if(!bioEditor)return;bioEditor.focus();document.execCommand('styleWithCSS',false,'false');document.execCommand(command,false,value||null);syncBioEditor();}
 
 function normalizePersonName(value){
   var result=String(value||'').trim().toLowerCase();
@@ -2323,7 +2480,7 @@ function showProfile(id,startExpanded){
   profileName.textContent=t.name||'';
   profileRole.textContent=t.role||'';
   profileArea.textContent=t.area||t.prefecture||'';
-  profileBio.textContent=t.bio||'';
+  profileBio.innerHTML=sanitizeMapRichHtml(t.bio||'');
   profileLinks.innerHTML='';
   if(t.email){var a=document.createElement('a');a.href='mailto:'+t.email;a.textContent='📧 '+t.email;profileLinks.appendChild(a);}
   if(t.phone){var p=document.createElement('a');p.href='tel:'+String(t.phone).split(' ').join('');p.textContent='📞 '+t.phone;profileLinks.appendChild(p);}
@@ -2374,6 +2531,25 @@ function fileToCompressedDataUrl(file){
   });
 }
 
+
+if(bioEditor){
+  bioEditor.addEventListener('input',function(){syncBioEditor();scheduleTherapistDraft();});
+  bioEditor.addEventListener('blur',function(){syncBioEditor();scheduleTherapistDraft();});
+  var richButtons=formModal.querySelectorAll('[data-rich-cmd],[data-rich-size],[data-rich-color],[data-rich-insert]');
+  Array.prototype.forEach.call(richButtons,function(button){
+    button.addEventListener('mousedown',function(event){event.preventDefault();});
+    button.addEventListener('click',function(){
+      if(button.getAttribute('data-rich-cmd'))runBioCommand(button.getAttribute('data-rich-cmd'));
+      else if(button.getAttribute('data-rich-size'))runBioCommand('fontSize',button.getAttribute('data-rich-size'));
+      else if(button.getAttribute('data-rich-color'))runBioCommand('foreColor',button.getAttribute('data-rich-color'));
+      else if(button.getAttribute('data-rich-insert'))runBioCommand('insertText',button.getAttribute('data-rich-insert'));
+    });
+  });
+}
+form.addEventListener('input',scheduleTherapistDraft);
+form.addEventListener('change',scheduleTherapistDraft);
+if(formExitButton)formExitButton.addEventListener('click',closeTherapistEditorSafely);
+
 function activatePortalManagement(){
   if(portalActivated || !portalMode || (portalRole!=='member' && portalRole!=='admin'))return;
   portalActivated=true;
@@ -2396,6 +2572,7 @@ function activatePortalManagement(){
 
 function prepareTherapistForm(){
   form.reset();
+  setBioEditor('');
 
   if(editingId){
     var t=therapists.find(function(item){return item.id===editingId;});
@@ -2406,7 +2583,7 @@ function prepareTherapistForm(){
     form.area.value=t.area||'';
     form.email.value=t.email||'';
     form.phone.value=t.phone||'';
-    form.bio.value=t.bio||'';
+    setBioEditor(t.bio||'');
     document.getElementById('formTitle').textContent='Επεξεργασία θεραπευτή';
   }else{
     document.getElementById('formTitle').textContent='Νέος θεραπευτής';
@@ -2414,6 +2591,9 @@ function prepareTherapistForm(){
   }
 
   document.getElementById('formHelper').style.display='block';
+  if(therapistDraftNote)therapistDraftNote.classList.remove('visible');
+  therapistFormBaseline=therapistFormFingerprint();
+  restoreTherapistDraft();
   return true;
 }
 
@@ -2449,8 +2629,11 @@ form.addEventListener('submit',async function(evt){
   evt.preventDefault();
   if(!pendingPoint){window.alert('Πρώτα πάτησε σε ένα σημείο του χάρτη για να τοποθετήσεις την πινέζα.');return;}
   var submitBtn=form.querySelector('.submit-btn');
+  var draftKeyBeforeSave=therapistDraftKey();
   submitBtn.disabled=true;submitBtn.textContent='Αποθήκευση...';
   try{
+    syncBioEditor();
+    if(!bioInput.value.replace(/<[^>]+>/g,' ').trim()){window.alert('Συμπλήρωσε το σύντομο βιογραφικό.');submitBtn.disabled=false;submitBtn.textContent='Αποθήκευση θεραπευτή';return;}
     var data=new FormData(form);
     var newPhotoFile=photoInput.files&&photoInput.files[0];
     var photo='';
@@ -2467,7 +2650,7 @@ form.addEventListener('submit',async function(evt){
       area:String(data.get('area')||'').trim(),
       email:String(data.get('email')||'').trim(),
       phone:String(data.get('phone')||'').trim(),
-      bio:String(data.get('bio')||'').trim(),
+      bio:sanitizeMapRichHtml(String(data.get('bio')||'').trim()),
       photo:photo,
       x:Number(pendingPoint.x.toFixed(1)),
       y:Number(pendingPoint.y.toFixed(1))
@@ -2496,7 +2679,10 @@ form.addEventListener('submit',async function(evt){
       await therapistsCol.add(payload);
     }
 
+    clearTherapistDraft(draftKeyBeforeSave);
     closeModal(formModal);
+    setBioEditor('');
+    if(therapistDraftNote)therapistDraftNote.classList.remove('visible');
     pendingPoint=null;
     pendingPrefecture='';
     draftDragging=false;
@@ -2542,9 +2728,9 @@ deleteButton.addEventListener('click',async function(){
   }
 });
 
-document.querySelectorAll('[data-close]').forEach(function(btn){btn.addEventListener('click',function(){closeModal(btn.closest('.modal'));});});
-document.querySelectorAll('.modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)closeModal(m);});});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal(formModal);closeModal(profileModal);closeModal(activityDetailModal);}});
+document.querySelectorAll('[data-close]').forEach(function(btn){btn.addEventListener('click',function(){var modal=btn.closest('.modal');if(modal===formModal)return;closeModal(modal);});});
+document.querySelectorAll('.modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m&&m!==formModal)closeModal(m);});});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal(profileModal);closeModal(activityDetailModal);}});
 
 initSvg();
 subscribeTherapists();
