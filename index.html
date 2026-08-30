@@ -21,7 +21,7 @@
 .profile-role{margin:5px 0 3px;color:var(--teal);font-size:14px;font-weight:800;}
 .profile-area{margin:0;color:var(--muted);font-size:13px;}
 .profile-bio{margin:0 0 20px;color:var(--ink);line-height:1.8;text-align:left;font-size:15px;white-space:normal;}
-.profile-bio b,.profile-bio strong{font-weight:800!important;}.profile-bio u{text-underline-offset:3px;}
+.profile-bio b,.profile-bio strong,.profile-bio span[style*="font-weight"]{font-weight:800!important;}.profile-bio u{text-underline-offset:3px;}
 .profile-links{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 26px;}
 .profile-links a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 16px;border-radius:999px;font-size:13px;font-weight:800;text-decoration:none;background:var(--teal);color:#fff;}
 .section-label{margin:0 0 12px;color:var(--teal-dark);font-family:Georgia,"Times New Roman",serif;font-size:18px;font-weight:500;border-top:1px solid var(--line);padding-top:20px;}
@@ -73,7 +73,7 @@
 .map-rich-separator{width:1px;height:22px;background:var(--line);margin:0 1px;}
 .map-rich-editor-area{min-height:125px;padding:12px 13px;outline:none;color:var(--ink);font-size:14px;line-height:1.7;background:#FFFDFC;}
 .map-rich-editor-area:empty:before{content:attr(data-placeholder);color:#9AA5A1;pointer-events:none;}
-.map-rich-editor-area b,.map-rich-editor-area strong{font-weight:800!important;}.map-rich-editor-area u{text-underline-offset:3px;}
+.map-rich-editor-area b,.map-rich-editor-area strong,.map-rich-editor-area span[style*="font-weight"]{font-weight:800!important;}.map-rich-editor-area u{text-underline-offset:3px;}
 #formModal .close-btn{display:none!important;}
 .map-form-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px;}
 .map-form-actions .submit-btn{width:100%;margin-top:0;}
@@ -1599,6 +1599,7 @@ function mapLooksLikeHtml(value){return /<\/?[a-z][\s\S]*>/i.test(String(value||
 function mapPlainToRichHtml(value){return escapeHtml(value).replace(/\r?\n/g,'<br>');}
 function mapSafeColor(value){return /^(#[0-9a-f]{3,8}|rgb(a)?\([0-9.,%\s]+\)|[a-z]+)$/i.test(String(value||'').trim());}
 function mapSafeFontSize(value){var v=String(value||'').trim().toLowerCase();if(!/^(\d+(?:\.\d+)?)(px|rem|em|%)$/.test(v))return false;var n=parseFloat(v);return isFinite(n)&&n>0&&n<=(v.endsWith('px')?72:v.endsWith('%')?300:4);}
+function mapSafeFontWeight(value){var v=String(value||'').trim().toLowerCase();if(v==='bold'||v==='bolder')return true;var n=parseInt(v,10);return isFinite(n)&&n>=500&&n<=900;}
 var MAP_RICH_FONT_SIZE={'1':'0.75rem','2':'0.875rem','3':'1rem','4':'1.15rem','5':'1.35rem','6':'1.65rem','7':'2rem'};
 function sanitizeMapRichHtml(value){
   var prepared=mapLooksLikeHtml(value)?String(value||''):mapPlainToRichHtml(value);
@@ -1618,8 +1619,8 @@ function sanitizeMapRichHtml(value){
       return styles.length?'<span style="'+styles.join(';')+'">'+children+'</span>':children;
     }
     if(tag==='SPAN'){
-      var spanStyles=[];var c=el.style&&el.style.color||'';var f=el.style&&el.style.fontSize||'';
-      if(c&&mapSafeColor(c))spanStyles.push('color:'+escapeHtml(c));if(f&&mapSafeFontSize(f))spanStyles.push('font-size:'+escapeHtml(f));
+      var spanStyles=[];var c=el.style&&el.style.color||'';var f=el.style&&el.style.fontSize||'';var w=el.style&&el.style.fontWeight||'';
+      if(c&&mapSafeColor(c))spanStyles.push('color:'+escapeHtml(c));if(f&&mapSafeFontSize(f))spanStyles.push('font-size:'+escapeHtml(f));if(w&&mapSafeFontWeight(w))spanStyles.push('font-weight:'+escapeHtml(w));
       return spanStyles.length?'<span style="'+spanStyles.join(';')+'">'+children+'</span>':'<span>'+children+'</span>';
     }
     var safe=tag.toLowerCase();return '<'+safe+'>'+children+'</'+safe+'>';
@@ -1628,7 +1629,7 @@ function sanitizeMapRichHtml(value){
 }
 function syncBioEditor(){if(!bioInput||!bioEditor)return;bioInput.value=sanitizeMapRichHtml(bioEditor.innerHTML);}
 function setBioEditor(value){if(!bioInput||!bioEditor)return;var safe=sanitizeMapRichHtml(value||'');bioInput.value=safe;bioEditor.innerHTML=safe;}
-function runBioCommand(command,value){if(!bioEditor)return;bioEditor.focus();document.execCommand('styleWithCSS',false,'false');document.execCommand(command,false,value||null);syncBioEditor();}
+function runBioCommand(command,value){if(!bioEditor)return;bioEditor.focus();document.execCommand('styleWithCSS',false,command==='bold'?'true':'false');document.execCommand(command,false,value||null);syncBioEditor();}
 
 function normalizePersonName(value){
   var result=String(value||'').trim().toLowerCase();
